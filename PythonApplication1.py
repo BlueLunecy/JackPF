@@ -4,6 +4,7 @@ import struct
 import sys
 import re
 from itertools import islice    
+import time
 
 def main():
     if len(sys.argv) !=2:
@@ -44,12 +45,9 @@ def main():
     workspace = (UCHAR * bufferWorkspaceSize.value)()
 
     with open(sys.argv[1], 'rb') as fileIn: #sys.argv[1] is the provided file from the command line
-        #for line in fileIn:
         buffer = fileIn.read()
         hexPat= re.compile(b'MAM')
         pos = 0
-        #match = re.search(hexPat, buffer) ##re.findall(hexPat, buffer)
-        #while match is not None:
         for match in re.finditer(hexPat, buffer):
             print("FOUND MAM here: {}".format(match.start()))
             len_uncompressed = struct.unpack("<I", buffer[match.start() + 4 : match.start() + 8])[0]
@@ -67,6 +65,7 @@ def main():
         for fileStart in offsetList:
             listPointer= 0 #Increments upon successful file carve, gets next size
             uncompressedSize = sizeList[listPointer]
+            listPointer += 1
             fileIn.seek(fileStart)
             uncompressBuffer = (UCHAR * uncompressedSize)()
             newBuffer=fileIn.read(300000)
@@ -89,11 +88,13 @@ def main():
                 ctypes.byref(finalFileSize),
                 ctypes.byref(workspace))
 
+                time.sleep(3)
+
                 print(ntstatus)
 
-        with open("carvedfile%s.pf" % fileNum, 'wb') as fileOut:
-            fileNum += 1
-            fileOut.write(bytearray(uncompressBuffer))
-            fileOut.close()
+        #with open("carvedfile%s.pf" % fileNum, 'wb') as fileOut:
+        #    fileNum += 1
+        #    fileOut.write(bytearray(uncompressBuffer))
+        #    fileOut.close()
 
 main()

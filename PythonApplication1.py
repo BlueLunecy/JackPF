@@ -31,15 +31,13 @@ def main():
     UCHAR  = ctypes.c_ubyte
     ULONG = ctypes.c_uint32
 
-    RtlGetCompressionWorkSpaceSize = \
-        ctypes.windll.ntdll.RtlGetCompressionWorkSpaceSize
+    RtlGetCompressionWorkSpaceSize = ctypes.windll.ntdll.RtlGetCompressionWorkSpaceSize
 
     bufferWorkspaceSize = ULONG()
     fragmentWorkspaceSize = ULONG()
     finalFileSize = ULONG()
 
-    RtlGetCompressionWorkSpaceSize
-    (USHORT(algorithm),
+    RtlGetCompressionWorkSpaceSize(USHORT(algorithm),
      ctypes.byref(bufferWorkspaceSize),
      ctypes.byref(fragmentWorkspaceSize))
     workspace = (UCHAR * bufferWorkspaceSize.value)()
@@ -81,6 +79,10 @@ def main():
                 compressedSize = zeroCounter
                 compressedFile = fileIn.read(compressedSize)
                 compressedBuffer = (UCHAR * compressedSize).from_buffer_copy(compressedFile)
+                print(uncompressBuffer)
+                print(uncompressedSize)
+                print(compressedBuffer)
+                print(compressedSize)
                 
                 ntstatus = RtlDecompressBufferEx(
                 USHORT(algorithm),
@@ -91,13 +93,13 @@ def main():
                 ctypes.byref(finalFileSize),
                 ctypes.byref(workspace))
 
-                #time.sleep(3)
+                #time.sleep(1)
 
                 print(ntstatus)
 
-        #with open("carvedfile%s.pf" % fileNum, 'wb') as fileOut:
-        #    fileNum += 1
-        #    fileOut.write(bytearray(uncompressBuffer))
-        #    fileOut.close()
+        with open("carvedfile%s.pf" % fileNum, 'wb') as fileOut:
+            fileNum += 1
+            fileOut.write(bytearray(uncompressBuffer))
+            fileOut.close()
 
 main()

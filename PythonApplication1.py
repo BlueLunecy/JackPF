@@ -23,6 +23,7 @@ def main():
     fileNum=1
     i = 0
     algorithm = 4
+    ntstatus = 1
 
     NULL = ctypes.POINTER(ctypes.c_uint)()
     SIZE_T = ctypes.c_uint
@@ -74,15 +75,17 @@ def main():
             #   print(x)
 
             for zeroCounter in zeroList:
-                fileIn.seek(fileStart)
+                if ntstatus == 0:
+                    break
+                fileIn.seek(fileStart + 8)
                 print(zeroCounter)
                 compressedSize = zeroCounter
                 compressedFile = fileIn.read(compressedSize)
                 compressedBuffer = (UCHAR * compressedSize).from_buffer_copy(compressedFile)
-                print(uncompressBuffer)
-                print(uncompressedSize)
-                print(compressedBuffer)
-                print(compressedSize)
+                #print(uncompressBuffer)
+                #print(uncompressedSize)
+                #print(compressedBuffer)
+                #print(compressedSize)
                 
                 ntstatus = RtlDecompressBufferEx(
                 USHORT(algorithm),
@@ -100,6 +103,6 @@ def main():
         with open("carvedfile%s.pf" % fileNum, 'wb') as fileOut:
             fileNum += 1
             fileOut.write(bytearray(uncompressBuffer))
-            fileOut.close()
+            fileOut.flush()
 
 main()

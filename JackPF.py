@@ -104,5 +104,6 @@ def main():
             fileNum += 1
             fileOut.write(bytearray(uncompressBuffer))
             fileOut.flush()
+            fileOut.close()
 
 main()

@@ -71,6 +71,9 @@ def main():
             newBuffer=fileIn.read(300000)
             for zeroGrab in islice(re.finditer(zeroPat, newBuffer), zeroLimit):
                 zeroList.append(zeroGrab.end()) #Clear this out with new fileStart
+            #print(len(zeroList))
+            #for x in zeroList:
+            #   print(x)
 
             for zeroCounter in zeroList:
                 fileIn.seek(fileStart)
@@ -88,7 +91,7 @@ def main():
                 ctypes.byref(finalFileSize),
                 ctypes.byref(workspace))
 
-                time.sleep(3)
+                #time.sleep(3)
 
                 print(ntstatus)
 
